@@ -29,7 +29,7 @@
 					<!-- from import package maven can lookup bundle from all repositorys 
 						declare on target platform, also maven local so default generated site-p2 
 						don't include that bundle. this configuration change default behavior -->
-					<includeAllDependencies>true</includeAllDependencies>
+					<includeAllDependencies>false</includeAllDependencies>
 					<!-- https://bugs.eclipse.org/bugs/show_bug.cgi?id=512396 -->
 					<xzCompress>false</xzCompress>
 				</configuration>
