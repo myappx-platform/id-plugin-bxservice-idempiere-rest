@@ -2994,6 +2994,58 @@
 			"response": []
 		},
 		{
+			"name": "api/v1/models/{table name}/{id}/archives/{archive id}?presign",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/api/v1/models/c_invoice/1000045/archives/1000123?presign=true&expiresInSeconds=600",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"models",
+						"c_invoice",
+						"1000045",
+						"archives",
+						"1000123"
+					],
+					"query": [
+						{
+							"key": "presign",
+							"value": "true"
+						},
+						{
+							"key": "expiresInSeconds",
+							"value": "600"
+						}
+					]
+				},
+				"description": "Get a presigned (time-limited, auth-free) download URL for a single archive entry. Returns {\"url\": \"...\"}"
+			},
+			"response": []
+		},
+		{
 			"name": "api/v1/models/{table name}/{id}/attachments",
 			"request": {
 				"method": "POST",
@@ -6249,104 +6301,104 @@
 			"response": []
 		},
 		{
-		  "name": "api/v1/models/{table name} - timestamp eq filter",
-		  "request": {
-			"method": "GET",
-			"header": [
-			  {
-				"key": "Content-Type",
-				"value": "application/json",
-				"type": "text"
-			  },
-			  {
-				"key": "Accept",
-				"value": "application/json",
-				"type": "text"
-			  },
-			  {
-				"key": "Authorization",
-				"value": "Bearer {{authToken}}",
-				"type": "text"
-			  }
-			],
-			"url": {
-			  "raw": "{{protocol}}://{{host}}:{{port}}/api/v1/models/c_tax?$filter=created eq '2003-01-08T15:06:11'&$select=name,created",
-			  "protocol": "{{protocol}}",
-			  "host": [
-				"{{host}}"
-			  ],
-			  "port": "{{port}}",
-			  "path": [
-				"api",
-				"v1",
-				"models",
-				"c_tax"
-			  ],
-			  "query": [
-				{
-				  "key": "$filter",
-				  "value": "created eq '2003-01-08T15:06:11'"
+			"name": "api/v1/models/{table name} - timestamp eq filter",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/api/v1/models/c_tax?$filter=created eq '2003-01-08T15:06:11Z'&$select=name,created",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"models",
+						"c_tax"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "created eq '2003-01-08T15:06:11Z'"
+						},
+						{
+							"key": "$select",
+							"value": "name,created",
+							"type": "text"
+						}
+					]
 				},
-				{
-				  "key": "$select",
-				  "value": "name,created",
-				  "type": "text"
-				}
-			  ]
+				"description": "Get records for table with optional filter, orderBy and pageNo parameter. Default page size is 100."
 			},
-			"description": "Get records for table with optional filter, orderBy and pageNo parameter. Default page size is 100."
-		  },
-		  "response": []
+			"response": []
 		},
 		{
-		  "name": "api/v1/models/{table name} - timestamp range filter",
-		  "request": {
-			"method": "GET",
-			"header": [
-			  {
-				"key": "Content-Type",
-				"value": "application/json",
-				"type": "text"
-			  },
-			  {
-				"key": "Accept",
-				"value": "application/json",
-				"type": "text"
-			  },
-			  {
-				"key": "Authorization",
-				"value": "Bearer {{authToken}}",
-				"type": "text"
-			  }
-			],
-			"url": {
-			  "raw": "{{protocol}}://{{host}}:{{port}}/api/v1/models/c_tax?$filter=created ge '2003-01-08T01:06:11Z' and created lt '2003-01-09T23:20:21Z'&$select=name,created",
-			  "protocol": "{{protocol}}",
-			  "host": [
-				"{{host}}"
-			  ],
-			  "port": "{{port}}",
-			  "path": [
-				"api",
-				"v1",
-				"models",
-				"c_tax"
-			  ],
-			  "query": [
-				{
-				  "key": "$filter",
-				  "value": "created ge '2003-01-08T01:06:11Z' and created lt '2003-01-09T23:20:21Z'"
+			"name": "api/v1/models/{table name} - timestamp range filter",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/api/v1/models/c_tax?$filter=created ge '2003-01-08T01:06:11Z' and created lt '2003-01-09T23:20:21Z'&$select=name,created",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"models",
+						"c_tax"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "created ge '2003-01-08T01:06:11Z' and created lt '2003-01-09T23:20:21Z'"
+						},
+						{
+							"key": "$select",
+							"value": "name,created"
+						}
+					]
 				},
-				{
-				  "key": "$select",
-				  "value": "name,created"
-				}
-			  ]
+				"description": "Get records for table with optional filter, orderBy and pageNo parameter. Default page size is 100."
 			},
-			"description": "Get records for table with optional filter, orderBy and pageNo parameter. Default page size is 100."
-		  },
-		  "response": []
-		}		
+			"response": []
+		}
 	],
 	"event": [
 		{

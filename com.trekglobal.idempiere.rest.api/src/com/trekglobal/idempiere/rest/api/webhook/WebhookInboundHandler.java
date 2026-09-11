@@ -25,6 +25,9 @@
 **********************************************************************/
 package com.trekglobal.idempiere.rest.api.webhook;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -71,7 +74,8 @@ public class WebhookInboundHandler {
 	private WebhookInboundHandler() {
 	}
 
-	public static Response handle(String endpointKey, String body, HttpHeaders headers, String remoteAddr) {
+	public static Response handle(String endpointKey, String body, Map<String, String> queryParams,
+			HttpHeaders headers, String remoteAddr) {
 		Properties ctx = Env.getCtx();
 
 		// Lookup endpoint by key (before master switch — need AD_Client_ID for client-level SysConfig)
@@ -209,12 +213,21 @@ public class WebhookInboundHandler {
 					.build();
 		}
 
+		Env.setContext(ctx, Env.AD_USER_ID, userId);
+
 		ProcessInfo pi = new ProcessInfo("Webhook: " + endpointKey, inbound.getAD_Process_ID());
 		pi.setAD_Client_ID(inbound.getAD_Client_ID());
 		pi.setAD_User_ID(userId);
-		pi.setParameter(new ProcessInfoParameter[] {
-				new ProcessInfoParameter(PROCESS_PARAM_PAYLOAD, body, null, null, null)
-		});
+		List<ProcessInfoParameter> piParams = new ArrayList<>();
+		if (queryParams != null) {
+			for (Map.Entry<String, String> qp : queryParams.entrySet()) {
+				if (qp.getKey() == null || PROCESS_PARAM_PAYLOAD.equals(qp.getKey()))
+					continue;
+				piParams.add(new ProcessInfoParameter(qp.getKey(), qp.getValue(), null, null, null));
+			}
+		}
+		piParams.add(new ProcessInfoParameter(PROCESS_PARAM_PAYLOAD, body, null, null, null));
+		pi.setParameter(piParams.toArray(new ProcessInfoParameter[0]));
 
 		try {
 			ServerProcessCtl.process(pi, null);

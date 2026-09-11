@@ -31,7 +31,7 @@ public class X_REST_Webhook_Out_Event extends PO implements I_REST_Webhook_Out_E
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20260429L;
+	private static final long serialVersionUID = 20260807L;
 
     /** Standard Constructor */
     public X_REST_Webhook_Out_Event (Properties ctx, int REST_Webhook_Out_Event_ID, String trxName)
@@ -140,6 +140,22 @@ public class X_REST_Webhook_Out_Event extends PO implements I_REST_Webhook_Out_E
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
+	}
+
+	/** Set Condition.
+		@param Condition Optional logic expression that must be true for an event to be delivered to this webhook subscription.
+	*/
+	public void setCondition (String Condition)
+	{
+		set_Value (COLUMNNAME_Condition, Condition);
+	}
+
+	/** Get Condition.
+		@return Optional logic expression that must be true for an event to be delivered to this webhook subscription.
+	  */
+	public String getCondition()
+	{
+		return (String)get_Value(COLUMNNAME_Condition);
 	}
 
 	/** EventModelValidator AD_Reference_ID=53237 */

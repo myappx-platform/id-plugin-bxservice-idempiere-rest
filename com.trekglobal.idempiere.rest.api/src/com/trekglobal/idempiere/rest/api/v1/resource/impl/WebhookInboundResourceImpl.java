@@ -25,6 +25,9 @@
 **********************************************************************/
 package com.trekglobal.idempiere.rest.api.v1.resource.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -43,6 +46,13 @@ public class WebhookInboundResourceImpl implements WebhookInboundResource {
 	@Override
 	public Response receiveWebhook(String endpointKey, String body, HttpHeaders headers, HttpServletRequest request) {
 		String remoteAddr = request != null ? request.getRemoteAddr() : null;
-		return WebhookInboundHandler.handle(endpointKey, body, headers, remoteAddr);
+		Map<String, String> queryParams = new HashMap<>();
+		if (request != null && request.getParameterMap() != null) {
+			for (Map.Entry<String, String[]> e : request.getParameterMap().entrySet()) {
+				if (e.getValue() != null && e.getValue().length > 0)
+					queryParams.put(e.getKey(), e.getValue()[0]);
+			}
+		}
+		return WebhookInboundHandler.handle(endpointKey, body, queryParams, headers, remoteAddr);
 	}
 }

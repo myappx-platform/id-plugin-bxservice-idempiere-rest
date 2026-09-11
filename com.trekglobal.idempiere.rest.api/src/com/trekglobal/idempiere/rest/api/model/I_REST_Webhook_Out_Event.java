@@ -80,6 +80,19 @@ public interface I_REST_Webhook_Out_Event
 	@Deprecated(since="13") // use better methods with cache
 	public org.compiere.model.I_AD_Table getAD_Table() throws RuntimeException;
 
+    /** Column name Condition */
+    public static final String COLUMNNAME_Condition = "Condition";
+
+	/** Set Condition.
+	  * Optional logic expression that must be true for an event to be delivered to this webhook subscription.
+	  */
+	public void setCondition (String Condition);
+
+	/** Get Condition.
+	  * Optional logic expression that must be true for an event to be delivered to this webhook subscription.
+	  */
+	public String getCondition();
+
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
 

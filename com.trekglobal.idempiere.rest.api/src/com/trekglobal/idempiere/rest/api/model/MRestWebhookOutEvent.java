@@ -27,7 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.compiere.model.PO;
 import org.compiere.model.Query;
+import org.compiere.util.CLogger;
+import org.compiere.util.DefaultEvaluatee;
+import org.compiere.util.Evaluator;
 import org.compiere.util.Util;
 
 import com.trekglobal.idempiere.rest.api.webhook.WebhookEventHandler;
@@ -40,6 +44,8 @@ import com.trekglobal.idempiere.rest.api.webhook.WebhookEventHandler;
 public class MRestWebhookOutEvent extends X_REST_Webhook_Out_Event {
 
 	private static final long serialVersionUID = 20260411L;
+
+	private static final CLogger s_log = CLogger.getCLogger(MRestWebhookOutEvent.class);
 
 	public MRestWebhookOutEvent(Properties ctx, int REST_Webhook_Out_Event_ID, String trxName) {
 		super(ctx, REST_Webhook_Out_Event_ID, trxName);
@@ -94,6 +100,31 @@ public class MRestWebhookOutEvent extends X_REST_Webhook_Out_Event {
 		if (Util.isEmpty(eventModelValidator, true))
 			return false;
 		return eventModelValidator.equals(getEventModelValidator());
+	}
+
+	/**
+	 * Evaluate this subscription's condition against the source record.
+	 * <p>v1: an iDempiere logic expression (e.g. {@code @IsSOTrx@=Y} or
+	 * {@code @DocStatus@=CO & @GrandTotal@>1000}) evaluated in-memory against the PO,
+	 * with {@link DefaultEvaluatee} — the same value resolution used by display and
+	 * read-only logic (Yes/No columns match as {@code Y}/{@code N}, {@code @Column.Field@}
+	 * foreign-key references, secure columns, ...), so it applies to every event type
+	 * including deletes. An empty condition always matches (deliver all — no change from
+	 * previous behavior). An invalid or non-evaluable expression yields no delivery (and
+	 * is logged).
+	 * @param po the source record that triggered the event
+	 * @return true when the delivery should proceed
+	 */
+	public boolean isConditionMet(PO po) {
+		String condition = getCondition();
+		if (Util.isEmpty(condition, true) || po == null)
+			return true;
+		try {
+			return Evaluator.evaluateLogic(new DefaultEvaluatee(po), condition);
+		} catch (Exception e) {
+			s_log.warning("Webhook condition '" + condition + "' failed to evaluate, skipping delivery: " + e.getMessage());
+			return false;
+		}
 	}
 
 	/**

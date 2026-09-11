@@ -494,8 +494,9 @@ components:
                 example: 110
               created:
                 type: string
+                format: date-time
                 description: timestamp the archive was created
-                example: '2026-06-19 09:00:00.0'
+                example: '2026-06-19T09:00:00Z'
       description: An array of archive entries, most recent first
     TabField:
       description: tab field description
@@ -4832,7 +4833,10 @@ paths:
       description: >-
         Returns the binary content of a single archive entry. By default the raw
         file stream is returned; pass the json query parameter to receive a JSON
-        object with base64 encoded data instead.
+        object with base64 encoded data instead. Pass presign=true to receive a
+        time-limited signed URL ({"url": "..."}) that can be shared without
+        authentication. The expiry is capped by REST_PRESIGNED_URL_MAX_EXPIRE_SECONDS
+        (default 3600s).
       parameters:
         - name: tableName
           in: path
@@ -4859,9 +4863,24 @@ paths:
           schema:
             type: string
           description: 'not empty to get archive content as base64 encoded data ("data": "base64 content")'
+        - name: presign
+          in: query
+          schema:
+            type: string
+            enum: ['true']
+          description: 'pass "true" to return a presigned URL instead of binary content'
+        - name: expiresInSeconds
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: 'lifetime of the presigned URL in seconds (0 = use server default; capped by REST_PRESIGNED_URL_MAX_EXPIRE_SECONDS)'
       responses:
         '200':
-          description: OK. Successfully retrieved the archive. The response body is either the file stream or a JSON object with base64 encoded data (if json is specified).
+          description: >-
+            OK. Response is the file stream, a JSON object with base64 encoded data
+            (if json is specified), or a JSON object with a presigned URL (if presign=true).
           content:
             application/octet-stream:
               schema:
@@ -4869,12 +4888,18 @@ paths:
                 format: binary
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    format: byte
-                    description: base64 encoded archive content
+                oneOf:
+                  - type: object
+                    properties:
+                      data:
+                        type: string
+                        format: byte
+                        description: base64 encoded archive content
+                  - type: object
+                    properties:
+                      url:
+                        type: string
+                        description: presigned URL for direct download without authentication
         '403':
           $ref: '#/components/responses/ForbiddenGetRecordRequest'
         '404':
@@ -7941,7 +7966,10 @@ paths:
       description: >-
         Returns the binary content of a single archive entry. By default the raw
         file stream is returned; pass the json query parameter to receive a JSON
-        object with base64 encoded data instead.
+        object with base64 encoded data instead. Pass presign=true to receive a
+        time-limited signed URL ({"url": "..."}) that can be shared without
+        authentication. The expiry is capped by REST_PRESIGNED_URL_MAX_EXPIRE_SECONDS
+        (default 3600s).
       parameters:
         - name: viewName
           in: path
@@ -7968,9 +7996,24 @@ paths:
           schema:
             type: string
           description: 'not empty to get archive content as base64 encoded data ("data": "base64 content")'
+        - name: presign
+          in: query
+          schema:
+            type: string
+            enum: ['true']
+          description: 'pass "true" to return a presigned URL instead of binary content'
+        - name: expiresInSeconds
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: 'lifetime of the presigned URL in seconds (0 = use server default; capped by REST_PRESIGNED_URL_MAX_EXPIRE_SECONDS)'
       responses:
         '200':
-          description: OK. Successfully retrieved the archive. The response body is either the file stream or a JSON object with base64 encoded data (if json is specified).
+          description: >-
+            OK. Response is the file stream, a JSON object with base64 encoded data
+            (if json is specified), or a JSON object with a presigned URL (if presign=true).
           content:
             application/octet-stream:
               schema:
@@ -7978,12 +8021,18 @@ paths:
                 format: binary
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    format: byte
-                    description: base64 encoded archive content
+                oneOf:
+                  - type: object
+                    properties:
+                      data:
+                        type: string
+                        format: byte
+                        description: base64 encoded archive content
+                  - type: object
+                    properties:
+                      url:
+                        type: string
+                        description: presigned URL for direct download without authentication
         '403':
           $ref: '#/components/responses/ForbiddenGetRecordRequest'
         '404':

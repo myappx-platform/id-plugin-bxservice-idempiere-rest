@@ -247,13 +247,19 @@ public interface ModelResource {
 	@GET
 	@Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})
 	/**
-	 * Get content of an archive item
+	 * Get content of an archive item.
+	 * When presign=true, returns a JSON object with a signed URL instead of streaming bytes.
 	 * @param tableName
 	 * @param id record id/uuid
 	 * @param archiveId AD_Archive_ID of an archive item
-	 * @return binary stream of an archive item
+	 * @param asJson return content as base64-encoded JSON
+	 * @param presign if "true", return a presigned URL instead of binary content
+	 * @param expiresInSeconds lifetime of the presigned URL in seconds (capped by REST_PRESIGNED_URL_MAX_EXPIRE_SECONDS)
+	 * @return binary stream, base64 JSON, or presigned URL JSON
 	 */
-	public Response getArchiveEntry(@PathParam("tableName") String tableName, @PathParam("id") String id, @PathParam("archiveId") int archiveId, @QueryParam(QueryOperators.AS_JSON) String asJson);
+	public Response getArchiveEntry(@PathParam("tableName") String tableName, @PathParam("id") String id,
+			@PathParam("archiveId") int archiveId, @QueryParam(QueryOperators.AS_JSON) String asJson,
+			@QueryParam("presign") String presign, @DefaultValue("0") @QueryParam("expiresInSeconds") long expiresInSeconds);
 
 	@Path("{tableName}/{id}/print")
 	@GET

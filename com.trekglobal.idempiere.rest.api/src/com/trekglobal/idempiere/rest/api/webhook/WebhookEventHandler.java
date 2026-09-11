@@ -231,7 +231,7 @@ public class WebhookEventHandler extends AbstractEventHandler {
 		String payloadTemplate = null;
 		String[] includes = null;
 		String[] excludes = null;
-		boolean matched = false;
+		MRestWebhookOutEvent matchedEvent = null;
 		List<MRestWebhookOutEvent> events = MRestWebhookOutEvent.getByEndpoint(
 				po.getCtx(), endpoint.getREST_Webhook_Out_ID(), null);
 		for (MRestWebhookOutEvent eventConfig : events) {
@@ -239,12 +239,19 @@ public class WebhookEventHandler extends AbstractEventHandler {
 				payloadTemplate = eventConfig.getPayloadTemplate();
 				includes = eventConfig.getIncludeColumnsArray();
 				excludes = eventConfig.getExcludeColumnsArray();
-				matched = true;
+				matchedEvent = eventConfig;
 				break;
 			}
 		}
-		if (!matched)
+		if (matchedEvent == null)
 			return;
+
+		if (!matchedEvent.isConditionMet(po)) {
+			if (log.isLoggable(Level.FINE))
+				log.fine("Webhook condition not met for endpoint " + endpoint.getName() + " ("
+						+ po.get_TableName() + " ID=" + po.get_ID() + "), skipping delivery");
+			return;
+		}
 
 		// Build payload — envelope or raw depending on IsStandardWebhook flag
 		String payload;
